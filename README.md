@@ -10,7 +10,7 @@ Do not change the motor pins as setting them incorrectly will break the board.
 
 
 ###Installation and Support
-**Flashing instructions same as the CG023 in the link below**
+*Flashing instructions same as the CG023 in the link below*
 
 Currently this port is covered by the CG023 thread on rcgroups.
 http://www.rcgroups.com/forums/showthread.php?t=2634611#post34381034
