@@ -6,7 +6,7 @@ It also has a 5V step-up onboard, followed by a 2.8V linear reg. Because of this
 
 For this reason, the firmware currently uses the "#define LVC_PREVENT_RESET" to reduce the throttle when the battery is too low.
 
-Do not change the motor pins as setting the incorrectly will break the board.
+Do not change the motor pins as setting them incorrectly will break the board.
 
 
 ###Installation and Support
