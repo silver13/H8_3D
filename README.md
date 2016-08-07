@@ -1,41 +1,48 @@
-# CG023
-##**Firmware for CG023**
+# Eachine H8 mini 3D firmware
 
-This is an alternate firmware for the Eachine CG023 quadcopter. It is a port of the Eachine H8 firmware, also by me ( silverxxx).
+###Hardware information
+The eachine H8 3D uses a STM32F031 processor with 16K flash, MPU 6052 gyro and XN297 radio.
+It also has a 5V step-up onboard, followed by a 2.8V linear reg. Because of this, care should be taken not too overdischarge the battery, as the quad will not reset until the battery will become very low.
 
-The quadcopter is based around the STM32F031 chip, Cortex M0 processor with 16K flash memory.
+For this reason, the firmware currently uses the "#define LVC_PREVENT_RESET" to reduce the throttle when the battery is too low.
 
-###Compiling:
-Compile using MDK-ARM toolchain aka Keil uVision. A special version is available for stm32F0xx devices ( full free version ), but it's not necessary since the 32K limit of the free version is above the cpu's 16K. STM32 support may need to be installed using the "pack installer" 
+Do not change the motor pins as setting the incorrectly will break the board.
 
-Opening the project file in Keil will also ask to install the pack if not present.
-
-###Radio protocol:
-Current options are stock cg023 transmitter ,H8 mini transmitter / devo, CX-10 (later "blue" variant) and H7. Protocol is by default H8 mini protocol, and can be changed in file config.h
-
-###Accelerometer calibration:
-Move the pitch stick down 3 times within about 2 seconds. Needs to be done on a level surface. Saved so it only needs to be done once. You may need to use high rates in order to reach the treshold.
-
-###Differences from H8 version:
- * rates have been integrated into protocol file, and depend on protocol abilities
- * the quadcopter rate ( in deg/sec) is no longer multiplied by 2, so it's the actual rate with devo.
- * acro only version can be compiled by enabling respective setting in config.h
- * LEVEL_MAX_RATE is now a hardware limit and does not affect pid kp and ki
-
-###Hardware settings
-The STM32 port ( this firmware ) is designed to be configurable in order to be adaptable to other boards.Hardware configuration  settings are found in file hardware.h . Right now, only xn297 radio and invensense gyro (sometimes marked M5xx or M6xx) are supported. Pwm pins can be set to PA0 - PA11 , PB0 , PB1. Radio SPI and gyro I2C can be set to any PAx or PBx pins.
-
-###Linux/gcc version
-The gcc version compiles close to 16k, and may need turning off features in order to make it fit. Read install.md for additional information.
 
 ###Installation and Support
-Currently this port is covered by the it's own thread on rcgroups.
+**Flashing instructions same as the CG023 in the link below**
+
+Currently this port is covered by the CG023 thread on rcgroups.
 http://www.rcgroups.com/forums/showthread.php?t=2634611#post34381034
+
+
+###Radio protocol:
+Now using bayang protocol, original protocol to be added in the future. Some other protocols can also be selected.
+
+
+###Accelerometer calibration:
+Move the pitch stick down 3 times within about 2 seconds. Needs to be done on a level surface. Saved so it only needs to be done once. You may need to use high rates in order to reach the treshold. High rates only right now.
+
+### Level mode
+Levelmode gestures only work in high rates right now.
+
+###Differences from H8 version:
+ * the quadcopter rate ( in deg/sec) is no longer multiplied by 2, so it's the actual rate with devo.
+ * acro only version can be compiled by enabling respective setting in config.h
+
+
+###Linux/gcc version
+The gcc version compiles close to 16k, and may need turning off features in order to make it fit. Read install.md for flashing information.
 
 ###Wiki
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###History:
+
+####07.08.16
+* initial code posted
+
+###Old CG023 History:
 
 ####03.08.16
 * added bluetooth beacon functionality
