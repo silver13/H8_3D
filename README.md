@@ -39,6 +39,7 @@ http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Board images
 Chech the boards are identical with the images below
+
 **the JJRC H22 board is not the same!**
 
 <a href="/img/IMAG0520res.jpg" target="_blank"><img src="/img/IMAG0520res.jpg" alt="Loading" width="240" height="240" border="10" /></a>
