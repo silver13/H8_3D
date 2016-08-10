@@ -37,6 +37,10 @@ The gcc version compiles close to 16k, and may need turning off features in orde
 ###Wiki
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
+###Board images
+[Board image](/img/IMAG0520res.jpg)
+[Board image](/img/IMAG0522res.jpg)
+
 ###History:
 
 ####07.08.16
