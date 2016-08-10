@@ -38,7 +38,7 @@ The gcc version compiles close to 16k, and may need turning off features in orde
 http://sirdomsen.diskstation.me/dokuwiki/doku.php?id=start
 
 ###Board images
-Chech the boards are identical with the images below
+Check the boards are identical with the images below
 
 **the JJRC H22 board is not the same!**
 
