@@ -238,7 +238,7 @@ else
 	aux[CH_VID] = 1;
 	aux[CH_EXPERT] = 0;
 }
-						aux[CH_EXPERT] = (rxdata[17] & 0x02) ? 1 : 0;	// rate mid		 // high 0x04 			
+			//			aux[CH_EXPERT] = (rxdata[17] & 0x02) ? 1 : 0;	// rate mid		 // high 0x04 			
 						aux[CH_HEADFREE] = (rxdata[17] & 0x10) ? 1 : 0;	// headless
 						aux[CH_RTH] = 	(rxdata[17] & 0x20) ? 1 : 0;	// rth
 						aux[CH_PIC] = 	(rxdata[17] & 0x08) ? 1 : 0;	// led
