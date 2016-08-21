@@ -27,14 +27,10 @@
 
 
 
-// failsafe time in uS
-#define FAILSAFETIME 1000000  // one second
-
-
 // battery saver
 // do not start software if battery is too low
 // flashes 2 times repeatedly at startup
-//#define STOP_LOWBATTERY
+#define STOP_LOWBATTERY
 
 // under this voltage the software will not start 
 // if STOP_LOWBATTERY is defined above
@@ -48,19 +44,24 @@
 // increase if battery low comes on at max throttle
 // decrease if battery low warning goes away at high throttle
 // in volts
-#define VDROP_FACTOR 0.8
+#define VDROP_FACTOR 0.7
 
 // voltage hysteresys
 // in volts
 #define HYST 0.10
 
-// needed so the step-up does not overdischarge the battery
+
+
 // lower throttle when battery below treshold
 #define LVC_PREVENT_RESET
-
 // threshold for above (volts)
 #define LVC_PREVENT_RESET_VOLTAGE 2.85
 
+// kill motors to protect battery - use with step-ups
+// 5 seconds response
+#define LVC_KILL_MOTORS
+// when this voltage is reached the quad will stop working
+#define LVC_KILL_MOTORS_VOLTAGE 2.80
 
 
 // Gyro LPF filter frequency
@@ -110,20 +111,38 @@
 // DEVO channels (bayang protocol)
 // DEVO_CHAN_5 - DEVO_CHAN_10
 
+// H8 3d protocol(stock) - rate button cycles rates/mode
+// mode switch = CG_VID (LEVELMODE)
+// rate - CH_EXPERT (RATES)
+// 1 beep - level - low rates CG_VID=HIGH CH_EXPERT=LOW
+// 2 beeps - level - high rates CG_VID=HIGH CH_EXPERT=HIGH
+// 3 beeps - acro - high rates CG_VID=LOW CH_EXPERT=HIGH
+
 // CH_ON - on always ( all protocols)
 // CH_OFF - off always ( all protocols)
+
+// rates / expert mode
+#define RATES CH_EXPERT
+
 #define HEADLESSMODE CH_OFF
 
-#define LEVELMODE CH_AUX1
+#define LEVELMODE CH_VID
 
 #define STARTFLIP CH_OFF
 
+#define INVERTEDMODE CH_AUX3
+
 #define LEDS_ON CH_ON
 
-#define INVERTEDMODE CH_OFF
 
 // aux1 channel starts on if this is defined, otherwise off.
 //#define AUX1_START_ON
+
+// currently it only improves reception
+//#define USE_STOCK_TX
+
+// automatically remove center bias ( needs throttle off for 1 second )
+//#define STOCK_TX_AUTOCENTER
 
 // Gestures enable ( gestures 1 = acc only)
 //#define GESTURES1_ENABLE
@@ -156,6 +175,10 @@
 // comment out to disable
 #define AUTO_THROTTLE
 
+// enable auto lower throttle near max throttle to keep control
+// comment out to disable
+//#define MIX_LOWER_THROTTLE
+
 // build acro only firmware
 // removes the distraction of level mode for learning
 //#define ACRO_ONLY
@@ -164,15 +187,16 @@
 // select only one
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
-#define RX_BAYANG_PROTOCOL
+//#define RX_BAYANG_PROTOCOL
 //#define RX_BAYANG_PROTOCOL_BLE_BEACON
 //#define RX_CX10BLUE_PROTOCOL
+#define RX_H8_3D_PROTOCOL
 
 // mode 1 to mode 3 conversion
 // cg023 protocol
 //#define RX_CG023_SWAP_YAWROLL
 
-// Flash saving features
+// Flash saving features - some auto enabled at the end if this file
 //#define DISABLE_HEADLESS
 //#define DISABLE_FLIP_SEQUENCER
 
@@ -196,13 +220,13 @@
 // debug / other things
 // this should not be usually changed
 
+// enable motors if pitch / roll controls off center (at zero throttle)
+// possible values: 0 / 1
+#define ENABLESTIX 0
+#define ENABLESTIX_TRESHOLD 0.3
 
-// +++++++++++++++++++++++++++++++++++++++++++++
 // time to change motor direction (uS)
 #define BRIDGE_TIMEOUT 100000
-// +++++++++++++++++++++++++++++++++++++++++++++
-
-
 
 // enable serial driver ( pin SWCLK after calibration) 
 // WILL DISABLE PROGRAMMING AFTER GYRO CALIBRATION - 2 - 3 seconds after powerup)
@@ -228,19 +252,21 @@
 // this affects soft gyro lpf frequency if used
 #define LOOPTIME 1000
 
+// failsafe time in uS
+#define FAILSAFETIME 1000000  // one second
+
+// max rate used by level pid ( limit )
+#define LEVEL_MAX_RATE 2000
 
 // invert yaw pid for hubsan motors
 //#define INVERT_YAW_PID
 
 // debug things ( debug struct and other)
-#define DEBUG
+//#define DEBUG
 
 // rxdebug structure
 //#define RXDEBUG
 
-// enable motors if pitch / roll controls off center (at zero throttle)
-// possible values: 0 / 1
-#define ENABLESTIX 0
 
 // overclock to 64Mhz
 //#define ENABLE_OVERCLOCK
@@ -248,7 +274,7 @@
 
 // limit minimum motor output to a value (0.0 - 1.0)
 //#define MOTOR_MIN_ENABLE
-#define MOTOR_MIN_VALUE 0.0
+#define MOTOR_MIN_VALUE 0.05
 
 // limit max motor output to a value (0.0 - 1.0)
 //#define MOTOR_MAX_ENABLE
@@ -285,18 +311,20 @@
  #ifdef USE_ESC_DRIVER
  #warning "MOTOR BEEPS_WORKS WITH BRUSHED MOTORS ONLY"
 #endif
+#undef STOP_LOWBATTERY
 #endif
 
+//needed for rssi
 #ifdef OSD_LTM_PROTOCOL
 #define RXDEBUG
 #endif
 
 
 
-
-
-
-
+// so the beacon works after in-flight reset
+#ifdef RX_BAYANG_PROTOCOL_BLE_BEACON
+#undef STOP_LOWBATTERY
+#endif
 
 
 

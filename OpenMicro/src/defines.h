@@ -2,6 +2,9 @@
 // defines for things that do not normally need changing
 
 
+#define FILTERCALC( sampleperiod, filtertime) (1.0f - ((float)sampleperiod) / ((float)filtertime))
+
+
 #define MOTOR_BL 0
 #define MOTOR_FL 1
 #define MOTOR_FR 3
@@ -12,7 +15,7 @@
 #define DEGTORAD 0.017453292f
 #define RADTODEG 57.29577951f
 
-#define AUXNUMBER 12
+
 
 #define ROLL 0
 #define PITCH 1
@@ -29,6 +32,7 @@
 #define CH_HEADFREE 2
 #define CH_RTH 3
 */
+#define AUXNUMBER 16
 
 #define CH_ON (AUXNUMBER - 2)
 #define CH_OFF (AUXNUMBER - 1)
@@ -38,7 +42,7 @@
 #define CH_RTH 3
 #define CH_AUX1 4
 #define CH_AUX2 5
-// trims numbers have to be sequential, atart at CH_PIT_TRIM
+// trims numbers have to be sequential, start at CH_PIT_TRIM
 #define CH_PIT_TRIM 6
 #define CH_RLL_TRIM 7
 #define CH_THR_TRIM 8
@@ -47,6 +51,9 @@
 #define CH_INV 6
 #define CH_VID 7
 #define CH_PIC 8
+
+#define CH_AUX3 10
+#define CH_AUX4 11
 
 #define CH_CG023_LED 3
 #define CH_CG023_FLIP 0
@@ -60,8 +67,8 @@
 #define CH_CX10_CH0 0
 #define CH_CX10_CH2 2
 
-#define CH_AUX3 CH_OFF
-#define CH_AUX4 CH_OFF
+
+
 
 
 #define DEVO_CHAN_5 CH_INV

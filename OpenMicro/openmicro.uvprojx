@@ -7,7 +7,7 @@
 
   <Targets>
     <Target>
-      <TargetName>Target H8_3D</TargetName>
+      <TargetName>Target CG023</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
       <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
@@ -472,6 +472,11 @@
               <FileName>rx_h7_protocol.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\rx_h7_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>rx_h8_3d_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\rx_h8_3d_protocol.c</FilePath>
             </File>
             <File>
               <FileName>rx_cx10blue_protocol.c</FileName>

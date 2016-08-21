@@ -70,33 +70,58 @@ extern void pwm_dir(int dir);
 float tempx[4];
 #endif
 
+#ifdef STOCK_TX_AUTOCENTER
+float autocenter[3];
+float lastrx[3];
+unsigned int consecutive[3];
+#endif
+
 unsigned long timecommand = 0;
 
 extern int controls_override;
 extern float rx_override[];
 extern int acro_override;
 
-// +++++++++++++++++++++++++++++++++++++++++++++
+float overthrottlefilt = 0;
+float underthrottlefilt = 0;
+
+
 int currentdir;
 extern int pwmdir;
 
 void bridge_sequencer(int dir);
 // bridge 
-int stage;
-int laststage;
-int lastdir;
+int stage = BRIDGE_WAIT;
 
 
 unsigned long bridgetime;
-//++++++++++++++++++++++++++++++++++++++++++++++
+
 void control( void)
 {	
 
+
+float rate_multiplier = 1.0;
+	
+	if ( aux[CH_EXPERT]  )
+	{		
+		
+	}
+	else
+	{
+		rate_multiplier = 0.5f;
+	}
+	// make local copy
+	
+
 	// make local copy
 	float rxcopy[4];	
-	for ( int i = 0 ; i < 4 ; i++)
+	for ( int i = 0 ; i < 3 ; i++)
 	{
-		rxcopy[i] = rx[i];
+		#ifdef STOCK_TX_AUTOCENTER
+		rxcopy[i] = (rx[i] - autocenter[i])* rate_multiplier;
+		#else
+		rxcopy[i] = rx[i] * rate_multiplier;
+		#endif
 	}
 
 
@@ -197,7 +222,8 @@ if (currentdir == REVERSE)
 			      }
 		    }
 	  }
-		#endif		
+		#endif	
+		
 	}
 #ifndef DISABLE_HEADLESS 
 // yaw angle for headless mode	
@@ -230,7 +256,7 @@ float attitudecopy[2];
 if (currentdir == REVERSE)
 		{	
 		// account for 180 deg wrap since inverted attitude is near 180
-		if ( attitude[0] > 0) attitudecopy[0] = attitude[0] - 180;
+		if ( attitude[0] > 0) attitudecopy[0] = attitude[0] - 180 ;
 		else attitudecopy[0] = attitude[0] + 180;		
 			
 		if ( attitude[1] > 0) attitudecopy[1] = attitude[1] - 180;
@@ -291,11 +317,23 @@ float	throttle;
 if ( rx[3] < 0.1f ) throttle = 0;
 else throttle = (rx[3] - 0.1f)*1.11111111f;
 
+static unsigned long onground_long = 0;
 
 // turn motors off if throttle is off and pitch / roll sticks are centered
-	if ( failsafe || (throttle < 0.001f && (!ENABLESTIX||  (fabsf(rx[ROLL]) < 0.5f && fabsf(rx[PITCH]) < 0.5f ) ) ) ) 
-
-	{ // motors off
+	if (failsafe || (throttle < 0.001f && ( !ENABLESTIX || !onground_long || aux[LEVELMODE] || (fabsf(rx[0]) < (float) ENABLESTIX_TRESHOLD && fabsf(rx[1]) < (float) ENABLESTIX_TRESHOLD))))
+	  { // motors off
+								
+		onground = 1;
+			
+		// used for "enablesticks"	
+		if ( onground_long )
+		{
+			if ( gettime() - onground_long > 1000000)
+			{
+				onground_long = 0;
+			}
+		}	
+		
 		for ( int i = 0 ; i <= 3 ; i++)
 		{
 			pwm_set( i , 0 );	
@@ -311,7 +349,37 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 		motorbeep();
 		#endif
 		#endif
+
+		#ifdef MIX_LOWER_THROTTLE
+		// reset the overthrottle filter
+		lpf(&overthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
+		lpf(&underthrottlefilt, 0.0f, 0.72f);	// 50hz 1khz sample rate
+		#endif		
 		
+		#ifdef STOCK_TX_AUTOCENTER
+		for( int i = 0 ; i <3;i++)
+			{
+				if ( rx[i] == lastrx[i] )
+					{
+						consecutive[i]++;
+						
+					}
+				else consecutive[i] = 0;
+				lastrx[i] = rx[i];
+				if ( consecutive[i] > 1000 && fabsf( rx[i]) < 0.1f )
+					{
+						autocenter[i] = rx[i];
+					}
+			}
+		#endif				
+		
+			
+		#ifndef ACRO_ONLY
+		// check if inverted and set channel AUX3 if true
+		extern float GEstG[];
+		aux[CH_AUX3] = ( GEstG[2] < 0.0f );
+		#endif
+			
 		onground = 1;
 		thrsum = 0;
 		
@@ -320,6 +388,9 @@ else throttle = (rx[3] - 0.1f)*1.11111111f;
 	{
 		onground = 0;
 		float mix[4];	
+		
+		
+		onground_long = gettime();
 		
 	if ( controls_override)
 	{// change throttle in flip mode
@@ -388,9 +459,139 @@ pidoutput[2] = -pidoutput[2];
 			pidoutput[ROLL] = -pidoutput[ROLL];
 			pidoutput[PITCH] = -pidoutput[PITCH];
 			pidoutput[YAW] = -pidoutput[YAW];		
+
+
+#ifdef LVC_KILL_MOTORS
+extern float vbatt_filt_kill;
+static int killmotors = 0;
+if (vbatt_filt_kill < (float) LVC_KILL_MOTORS_VOLTAGE) 
+{
+	killmotors = 1;
+}
+if ( killmotors )
+{
+	for ( int i = 0 ; i <= 3 ; i++)
+		{				
+		mix[i] = 0;
+		}
+}
+#endif
 		}
 	
-				
+	
+
+#ifdef MIX_LOWER_THROTTLE
+
+//#define MIX_INCREASE_THROTTLE
+
+// options for mix throttle lowering if enabled
+// 0 - 100 range ( 100 = full reduction / 0 = no reduction )
+#ifndef MIX_THROTTLE_REDUCTION_PERCENT
+#define MIX_THROTTLE_REDUCTION_PERCENT 100
+#endif
+// lpf (exponential) shape if on, othewise linear
+//#define MIX_THROTTLE_FILTER_LPF
+
+// limit reduction and increase to this amount ( 0.0 - 1.0)
+// 0.0 = no action 
+// 0.5 = reduce up to 1/2 throttle      
+//1.0 = reduce all the way to zero 
+#ifndef MIX_THROTTLE_REDUCTION_MAX
+#define MIX_THROTTLE_REDUCTION_MAX 0.5
+#endif
+
+#ifndef MIX_MOTOR_MAX
+#define MIX_MOTOR_MAX 1.0f
+#endif
+
+
+		  float overthrottle = 0;
+			float underthrottle = 0.001f;
+		
+		  for (int i = 0; i < 4; i++)
+		    {
+			    if (mix[i] > overthrottle)
+				    overthrottle = mix[i];
+					if (mix[i] < underthrottle)
+						underthrottle = mix[i];
+		    }
+
+		  overthrottle -= MIX_MOTOR_MAX ;
+
+		  if (overthrottle > (float)MIX_THROTTLE_REDUCTION_MAX)
+			  overthrottle = (float)MIX_THROTTLE_REDUCTION_MAX;
+
+#ifdef MIX_THROTTLE_FILTER_LPF
+		  if (overthrottle > overthrottlefilt)
+			  lpf(&overthrottlefilt, overthrottle, 0.82);	// 20hz 1khz sample rate
+		  else
+			  lpf(&overthrottlefilt, overthrottle, 0.72);	// 50hz 1khz sample rate
+#else
+		  if (overthrottle > overthrottlefilt)
+			  overthrottlefilt += 0.005f;
+		  else
+			  overthrottlefilt -= 0.01f;
+#endif
+			
+#ifdef MIX_INCREASE_THROTTLE
+// under			
+			
+		  if (underthrottle < -(float)MIX_THROTTLE_REDUCTION_MAX)
+			  underthrottle = -(float)MIX_THROTTLE_REDUCTION_MAX;
+			
+#ifdef MIX_THROTTLE_FILTER_LPF
+		  if (underthrottle < underthrottlefilt)
+			  lpf(&underthrottlefilt, underthrottle, 0.82);	// 20hz 1khz sample rate
+		  else
+			  lpf(&underthrottlefilt, underthrottle, 0.72);	// 50hz 1khz sample rate
+#else
+		  if (underthrottle < underthrottlefilt)
+			  underthrottlefilt += 0.005f;
+		  else
+			  underthrottlefilt -= 0.01f;
+#endif
+// under
+			if (underthrottlefilt < - (float)MIX_THROTTLE_REDUCTION_MAX)
+			  underthrottlefilt = - (float)MIX_THROTTLE_REDUCTION_MAX;
+		  if (underthrottlefilt > 0.1f)
+			  underthrottlefilt = 0.1;
+
+			underthrottle = underthrottlefilt;
+					
+			if (underthrottle > 0.0f)
+			  underthrottle = 0.0001f;
+
+			underthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
+			
+#endif			
+// over			
+		  if (overthrottlefilt > (float)MIX_THROTTLE_REDUCTION_MAX)
+			  overthrottlefilt = (float)MIX_THROTTLE_REDUCTION_MAX;
+		  if (overthrottlefilt < -0.1f)
+			  overthrottlefilt = -0.1;
+
+
+		  overthrottle = overthrottlefilt;
+
+			
+		  if (overthrottle < 0.0f)
+			  overthrottle = -0.0001f;
+
+			
+			// reduce by a percentage only, so we get an inbetween performance
+			overthrottle *= ((float)MIX_THROTTLE_REDUCTION_PERCENT / 100.0f);
+
+			
+			
+		  if (overthrottle > 0 || underthrottle < 0 )
+		    {		// exceeding max motor thrust
+					float temp = overthrottle + underthrottle;
+			    for (int i = 0; i < 4; i++)
+			      {
+				      mix[i] -= temp;
+			      }
+		    }
+#endif				
 
 thrsum = 0;		
 				

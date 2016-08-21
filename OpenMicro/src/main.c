@@ -74,7 +74,8 @@ void imu_init(void);
 // looptime in seconds
 float looptime;
 // filtered battery in volts
-float vbattfilt = 0.0;
+float vbattfilt = 0.0f;
+float vbatt_filt_kill = 4.2f;
 
 unsigned int lastlooptime;
 // signal for lowbattery
@@ -129,8 +130,10 @@ clk_init();
   time_init();
 
 	delay(100000);
-	
+
 	pwm_init();
+
+  pwm_dir(FREE);
 
 	pwm_set( MOTOR_BL , 0);
 	pwm_set( MOTOR_FL , 0);	 
@@ -294,8 +297,14 @@ if ( liberror )
 		
 	//	lpf ( &vref, startvref / adc_read(1) , 0.9968f );
 		
-		// filter motorpwm so it has the same delay as the filtered voltage
-		// ( or they can use a single filter)		
+
+#ifdef LVC_KILL_MOTORS		
+// filter for motor kill
+	  lpf ( &vbatt_filt_kill , battadc , FILTERCALC( LOOPTIME/ 1000.0f , 5000  ) );		
+#endif
+
+		// filter thrsum so it has the same delay as the filtered voltage
+		// ( or they can use a single filter)	
 		lpf ( &thrfilt , thrsum , 0.9968f);	// 0.5 sec at 1.6ms loop time	
 		
 		lpf ( &vbattfilt , battadc , 0.9968f);		
@@ -353,7 +362,11 @@ else
 						else
 					#endif // end gesture led flash
 				if ( aux[LEDS_ON] )
+				#if( LED_BRIGHTNESS != 15)	
 				led_pwm(LED_BRIGHTNESS);
+				#else
+				ledon( 255);
+				#endif
 				else 
 				ledoff( 255);
 			}
