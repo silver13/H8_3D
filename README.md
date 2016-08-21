@@ -17,9 +17,9 @@ http://www.rcgroups.com/forums/showthread.php?t=2634611#post34381034
 
 
 ###Radio protocol:
-Stock H8 3d protocol, the 3 rates switch between 2 level modes (high / low rates) and 1 acro ( high rates)
+Stock H8 3d protocol, the rate switch cycles between 2 level modes (high / low rates) and 1 acro ( high rates)
 
-For devo please use Bayang protocol, as it has better accuracy, and also has more on/off channels.
+For Deviation Tx / module please use Bayang protocol, as it has better accuracy, and also has more on/off channels.
 
 
 ###Accelerometer calibration:
