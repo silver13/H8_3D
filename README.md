@@ -17,19 +17,21 @@ http://www.rcgroups.com/forums/showthread.php?t=2634611#post34381034
 
 
 ###Radio protocol:
-Now using bayang protocol, original protocol to be added in the future. Some other protocols can also be selected.
+Stock H8 3d protocol, the 3 rates switch between 2 level modes (high / low rates) and 1 acro ( high rates)
+
+For devo please use Bayang protocol, as it has better accuracy, and also has more on/off channels.
 
 
 ###Accelerometer calibration:
 Move the pitch stick down 3 times within about 2 seconds. Needs to be done on a level surface. Saved so it only needs to be done once. You may need to use high rates in order to reach the treshold. High rates only right now.
 
-### Level mode
-Levelmode gestures only work in high rates right now.
 
 ###Differences from H8 version:
  * the quadcopter rate ( in deg/sec) is no longer multiplied by 2, so it's the actual rate with devo.
  * acro only version can be compiled by enabling respective setting in config.h
 
+###Motor cut
+The board includes a step-up regulator and to prevent battery damage the motors will stop working when a voltage treshhold is reached.
 
 ###Linux/gcc version
 The gcc version compiles close to 16k, and may need turning off features in order to make it fit. Read install.md for flashing information.
@@ -46,8 +48,13 @@ Check the boards are identical with the images below
 
 <a href="/img/IMAG0522res.jpg" target="_blank"><img src="/img/IMAG0522res.jpg" alt="Loading" width="240" height="240" border="10" /></a>
 
-
+### Purchase
+http://www.banggood.com/Eachine-H8-3D-Mini-CF-Mode-2_4G-4CH-6Axis-RC-Quadcopter-RTF-p-990494.html
+You can purchase one from banggood.
 ###History:
+
+####21.08.16
+* update and added stock protocol
 
 ####07.08.16
 * initial code posted
