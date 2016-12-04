@@ -173,7 +173,7 @@
 
 // throttle angle compensation in level mode
 // comment out to disable
-#define AUTO_THROTTLE
+//#define AUTO_THROTTLE
 
 // enable auto lower throttle near max throttle to keep control
 // comment out to disable
@@ -197,8 +197,8 @@
 //#define RX_CG023_SWAP_YAWROLL
 
 // Flash saving features - some auto enabled at the end if this file
-//#define DISABLE_HEADLESS
-//#define DISABLE_FLIP_SEQUENCER
+#define DISABLE_HEADLESS
+#define DISABLE_FLIP_SEQUENCER
 
 // led brightness in-flight ( solid lights only)
 // 0- 15 range
