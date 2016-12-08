@@ -51,9 +51,6 @@ Check the boards are identical with the images below
 
 <a href="/img/IMAG0522res.jpg" target="_blank"><img src="/img/IMAG0522res.jpg" alt="Loading" width="240" height="240" border="10" /></a>
 
-### Purchase
-http://www.banggood.com/Eachine-H8-3D-Mini-CF-Mode-2_4G-4CH-6Axis-RC-Quadcopter-RTF-p-990494.html
-You can purchase one from banggood.
 ###History:
 
 ####21.08.16
