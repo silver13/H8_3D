@@ -1,5 +1,8 @@
 # Eachine H8 mini 3D firmware
 
+*board warning: some boards use an unsupported cpu. Check the cpu markings for st logo or stm23031
+The unsupported cpu can't be connected to or erased*
+
 ###Hardware information
 The eachine H8 3D uses a STM32F031 processor with 16K flash, MPU 6052 gyro and XN297 radio.
 It also has a 5V step-up onboard, followed by a 2.8V linear reg. Because of this, care should be taken not too overdischarge the battery, as the quad will not reset until the battery will become very low.
