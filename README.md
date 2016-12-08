@@ -1,6 +1,6 @@
 # Eachine H8 mini 3D firmware
 
-*board warning: some boards use an unsupported cpu. Check the cpu markings for st logo or stm23031
+*board warning: some boards use an unsupported cpu. Check the cpu markings for St logo or stm32F031
 The unsupported cpu can't be connected to or erased*
 
 ###Hardware information
