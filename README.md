@@ -1,7 +1,7 @@
 # Eachine H8 mini 3D firmware
 
 *board warning: some boards use an unsupported cpu. Check the cpu markings for St logo or stm32F031
-The unsupported cpu can't be connected to or erased*
+The unsupported cpu can't be connected to or erased/ You can also check for rx and tx pads, present on the unsupported board's bottom side*
 
 ###Hardware information
 The eachine H8 3D uses a STM32F031 processor with 16K flash, MPU 6052 gyro and XN297 radio.
