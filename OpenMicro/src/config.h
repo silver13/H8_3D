@@ -46,6 +46,7 @@
 // in volts
 #define VDROP_FACTOR 0.7
 
+#define AUTO_VDROP_FACTOR
 // voltage hysteresys
 // in volts
 #define HYST 0.10
@@ -188,9 +189,10 @@
 //#define RX_CG023_PROTOCOL
 //#define RX_H7_PROTOCOL
 //#define RX_BAYANG_PROTOCOL
+#define RX_BAYANG_PROTOCOL_TELEMETRY
 //#define RX_BAYANG_PROTOCOL_BLE_BEACON
 //#define RX_CX10BLUE_PROTOCOL
-#define RX_H8_3D_PROTOCOL
+//#define RX_H8_3D_PROTOCOL
 
 // mode 1 to mode 3 conversion
 // cg023 protocol
